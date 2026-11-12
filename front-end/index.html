@@ -1,0 +1,1743 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSpace | Lesson Booking</title>
+
+    <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+    <script src="./lessons.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f6f7fb;
+            color: #1e293b;
+            font-family: Arial, sans-serif;
+        }
+
+        button, input, select {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        /* NAVIGATION */
+        .navbar {
+            background: #172d54;
+            color: white;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            cursor: pointer;
+        }
+
+        .logo i {
+            color: #93c5fd;
+            margin-right: 8px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .cart-nav-button {
+            background: rgba(255,255,255,0.13);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .cart-nav-button:hover {
+            background: rgba(255,255,255,0.23);
+        }
+
+        .cart-nav-button:disabled {
+            opacity: 0.5;
+        }
+
+        .cart-count {
+            background: #60a5fa;
+            color: #0f2343;
+            min-width: 23px;
+            height: 23px;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            padding: 0 5px;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #172d54, #274c82);
+            color: white;
+            padding: 85px 7%;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .eyebrow {
+            color: #bfdbfe;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 3px;
+            font-weight: bold;
+        }
+
+        .hero h1 {
+            font-size: clamp(36px, 5vw, 60px);
+            line-height: 1.12;
+            margin: 18px 0;
+            letter-spacing: -2px;
+        }
+
+        .hero p {
+            font-size: 17px;
+            line-height: 1.7;
+            color: #dbeafe;
+        }
+
+        /* MAIN */
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 55px 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 30px;
+            margin: 0 0 8px;
+            color: #172d54;
+        }
+
+        .section-header p {
+            color: #64748b;
+            margin: 0;
+        }
+
+        .count-badge {
+            background: #e0ecff;
+            color: #1d4ed8;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        /* SORTING AND SEARCH */
+        .sort-bar {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            border: 1px solid #e9edf4;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            min-width: 0;
+        }
+
+        .sort-bar label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .sort-bar select {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: white;
+            font-size: 14px;
+            color: #1e293b;
+            flex: 0 0 auto;
+            max-width: 190px;
+        }
+
+        /* SEARCH BAR */
+        .search-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+            flex: 0 1 380px;
+            width: 380px;
+            max-width: 380px;
+            min-width: 180px;
+        }
+
+        .search-control label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-control input {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            padding: 10px 14px 10px 38px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: white;
+            font-size: 14px;
+            outline: none;
+            color: #1e293b;
+        }
+
+        .search-control input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            background: white;
+            border: 1px solid #e9edf4;
+            border-radius: 14px;
+            padding: 45px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .no-results i {
+            display: block;
+            font-size: 35px;
+            margin-bottom: 15px;
+            color: #94a3b8;
+        }
+
+        /* LESSON CARDS */
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 26px;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #e9edf4;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.035);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 35px rgba(23,45,84,0.12);
+        }
+
+        .image-container {
+            height: 205px;
+            overflow: hidden;
+            background: #dbeafe;
+            position: relative;
+        }
+
+        .lesson-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .lesson-card:hover .lesson-image {
+            transform: scale(1.06);
+        }
+
+        .category-tag {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255,255,255,0.95);
+            color: #172d54;
+            padding: 7px 12px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .lesson-content {
+            padding: 23px;
+        }
+
+        .lesson-content h3 {
+            margin: 0 0 15px;
+            font-size: 21px;
+            color: #172d54;
+        }
+
+        .lesson-location {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .lesson-location i {
+            color: #3b82f6;
+            margin-right: 7px;
+        }
+
+        .lesson-footer {
+            padding-bottom: 18px;
+        }
+
+        .price {
+            font-size: 21px;
+            font-weight: 800;
+            color: #172d54;
+        }
+
+        .price small {
+            font-size: 12px;
+            font-weight: normal;
+            color: #94a3b8;
+        }
+
+        /* AVAILABILITY */
+        .availability-box {
+            padding: 17px;
+            background: #f8fafc;
+            border: 1px solid #edf0f5;
+            border-radius: 12px;
+        }
+
+        .availability-top,
+        .availability-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .availability-top {
+            margin-bottom: 12px;
+        }
+
+        .availability-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .availability-title i {
+            margin-right: 5px;
+        }
+
+        .availability-number {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .availability-track {
+            height: 9px;
+            background: #e5eaf2;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .availability-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.35s ease, background-color 0.35s ease;
+        }
+
+        .availability-bottom {
+            margin-top: 11px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .availability-status {
+            font-weight: 700;
+        }
+
+        /* BUTTONS */
+        .add-button,
+        .primary-button {
+            width: 100%;
+            padding: 15px 18px;
+            background: #172d54;
+            color: white;
+            border: none;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+
+        .add-button {
+            margin-top: 18px;
+        }
+
+        .add-button:hover:not(:disabled),
+        .primary-button:hover:not(:disabled) {
+            background: #2563eb;
+        }
+
+        .add-button:disabled,
+        .primary-button:disabled {
+            background: #cbd5e1;
+            color: #64748b;
+        }
+
+        .in-cart-note {
+            text-align: center;
+            margin-top: 11px;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* CART AND CHECKOUT */
+        .checkout-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 24px 90px;
+        }
+
+        .back-button {
+            border: none;
+            background: none;
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 0;
+            margin-bottom: 28px;
+        }
+
+        .checkout-title {
+            font-size: 36px;
+            color: #172d54;
+            margin: 0 0 8px;
+        }
+
+        .checkout-subtitle {
+            color: #64748b;
+            margin-bottom: 35px;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .checkout-card {
+            background: white;
+            padding: 32px;
+            border-radius: 18px;
+            border: 1px solid #e9edf4;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.035);
+        }
+
+        .checkout-card h2 {
+            margin: 0 0 25px;
+            color: #172d54;
+            font-size: 22px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            padding: 20px 0;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        .cart-item-image {
+            width: 88px;
+            height: 88px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .cart-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cart-item-info h3 {
+            font-size: 16px;
+            margin: 0 0 7px;
+            color: #172d54;
+        }
+
+        .cart-item-location {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .cart-item-price {
+            font-size: 14px;
+            font-weight: 800;
+            color: #172d54;
+        }
+
+        .cart-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 13px;
+            gap: 10px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            overflow: hidden;
+        }
+
+        .quantity-control button {
+            width: 33px;
+            height: 33px;
+            background: #f8fafc;
+            border: none;
+        }
+
+        .quantity-control span {
+            width: 34px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .remove-button {
+            background: none;
+            border: none;
+            color: #e25c56;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .cart-grand-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #edf0f5;
+            padding-top: 17px;
+            margin-top: 17px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #172d54;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 55px 10px;
+            color: #64748b;
+        }
+
+        .empty-cart i {
+            font-size: 45px;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+        }
+
+        /* FORM */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 9px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #dbe2ed;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+            background: white;
+            color: #1e293b;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+
+        .form-group input.input-error {
+            border-color: #ef4444;
+            background: #fffafa;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .phone-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .country-select {
+            width: 115px !important;
+            flex-shrink: 0;
+            font-size: 14px !important;
+            padding: 12px 9px !important;
+            background: #f8fafc !important;
+        }
+
+        .phone-input-group input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .error-message {
+            margin-top: 9px;
+            color: #dc2626;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .checkout-hint {
+            font-size: 13px;
+            color: #64748b;
+            margin: 12px 0 0;
+            text-align: center;
+        }
+
+        /* SUCCESS PAGE */
+        .success-page {
+            max-width: 650px;
+            margin: 75px auto;
+            padding: 55px 35px;
+            background: white;
+            border-radius: 22px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(23,45,84,0.07);
+        }
+
+        .success-icon {
+            width: 90px;
+            height: 90px;
+            background: #dcfce7;
+            color: #16a34a;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 42px;
+            margin: 0 auto 25px;
+        }
+
+        .success-page h1 {
+            color: #172d54;
+            font-size: 32px;
+        }
+
+        .success-page p {
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        .confirmation-details {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .confirmation-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .confirmation-row strong {
+            color: #172d54;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #172d54;
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+            z-index: 110;
+            font-size: 14px;
+            font-weight: 600;
+            max-width: calc(100% - 30px);
+            text-align: center;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #172d54;
+            color: #cbd5e1;
+            padding: 30px 7%;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 850px) {
+            .lesson-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .sort-bar {
+                flex-wrap: wrap;
+            }
+
+            .search-control {
+                flex: 1 1 100%;
+                width: 100%;
+                max-width: 100%;
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .lesson-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                padding: 18px 5%;
+            }
+
+            .nav-link {
+                display: none;
+            }
+
+            .hero {
+                padding: 60px 6%;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 35px 18px;
+            }
+
+            .checkout-card {
+                padding: 22px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .search-control {
+                width: 100%;
+                min-width: 0;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sort-bar {
+                align-items: stretch;
+            }
+
+            .sort-bar select {
+                width: 100%;
+            }
+
+            .availability-bottom {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div id="app" v-cloak>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <div class="logo" @click="goHome">
+            <i class="fa-solid fa-graduation-cap"></i>
+            EduSpace.
+        </div>
+
+        <div class="nav-right">
+            <span class="nav-link">Explore Lessons</span>
+
+            <button class="cart-nav-button"
+                    type="button"
+                    :class="{ active: currentPage === 'cart' }"
+                    :disabled="cartCount === 0"
+                    @click="toggleCart">
+                <i class="fa-solid fa-bag-shopping"></i>
+                My Cart
+                <span class="cart-count">{{ cartCount }}</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <template v-if="currentPage === 'home'">
+
+        <section class="hero">
+            <div class="hero-content">
+                <span class="eyebrow">Learn something new today</span>
+                <h1>Unlock your potential.</h1>
+                <p>
+                    Discover inspiring lessons, build new skills,
+                    and take the next step in your learning journey.
+                    Your future starts here.
+                </p>
+            </div>
+        </section>
+
+        <main class="container">
+
+            <div class="section-header">
+                <div>
+                    <h2>Explore Our Lessons</h2>
+                    <p>Find the perfect course for you.</p>
+                </div>
+
+                <span class="count-badge">
+                    {{ sortedLessons.length }} Lessons Found
+                </span>
+            </div>
+
+            <!-- SORTING AND SEARCH -->
+            <div class="sort-bar">
+
+                <label for="sortBy">
+                    <i class="fa-solid fa-arrow-down-wide-short"></i>
+                    Sort by
+                </label>
+
+                <select id="sortBy" v-model="sortBy">
+                    <option value="subject">Subject</option>
+                    <option value="location">Location</option>
+                    <option value="price">Price</option>
+                    <option value="spaces">Spaces (availability)</option>
+                </select>
+
+                <label for="sortOrder">Order</label>
+
+                <select id="sortOrder" v-model="sortOrder">
+                    <option value="asc">{{ ascLabel }}</option>
+                    <option value="desc">{{ descLabel }}</option>
+                </select>
+
+                <!-- SEARCH BAR -->
+                <div class="search-control">
+
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            id="searchLessons"
+                            type="text"
+                            v-model="searchQuery"
+                            placeholder="Search subject or location..."
+                        >
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- LESSON CARDS -->
+            <div class="lesson-grid">
+
+                <div class="no-results" v-if="sortedLessons.length === 0">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <strong>No lessons found</strong>
+                    <p>Try searching for another subject or location.</p>
+                </div>
+
+                <article class="lesson-card"
+                         v-for="lesson in sortedLessons"
+                         :key="lesson.id">
+
+                    <div class="image-container">
+                        <img class="lesson-image"
+                             :src="lesson.image"
+                             :alt="lesson.subject + ' lesson'"
+                             loading="lazy">
+
+                        <span class="category-tag">
+                            {{ lesson.subject }}
+                        </span>
+                    </div>
+
+                    <div class="lesson-content">
+                        <h3>{{ lesson.subject }}</h3>
+
+                        <p class="lesson-location">
+                            <i class="fa-solid fa-location-dot"></i>
+                            {{ lesson.location }}
+                        </p>
+
+                        <div class="lesson-footer">
+                            <div class="price">
+                                AED {{ lesson.price }}
+                                <small>/ lesson</small>
+                            </div>
+                        </div>
+
+                        <div class="availability-box">
+
+                            <div class="availability-top">
+                                <span class="availability-title">
+                                    <i class="fa-solid fa-users"></i>
+                                    Seat availability
+                                </span>
+
+                                <span class="availability-number"
+                                      :style="{ color: availabilityColor(lesson) }">
+                                    {{ remainingSpaces(lesson) }} left
+                                </span>
+                            </div>
+
+                            <div class="availability-track"
+                                 role="progressbar"
+                                 :aria-valuenow="remainingSpaces(lesson)"
+                                 aria-valuemin="0"
+                                 :aria-valuemax="lesson.capacity">
+
+                                <div class="availability-fill"
+                                     :style="{
+                                         width: availabilityPercent(lesson) + '%',
+                                         backgroundColor: availabilityColor(lesson)
+                                     }">
+                                </div>
+                            </div>
+
+                            <div class="availability-bottom">
+                                <span class="availability-status"
+                                      :style="{ color: availabilityColor(lesson) }">
+                                    {{ availabilityStatus(lesson) }}
+                                </span>
+
+                                <span>
+                                    {{ remainingSpaces(lesson) }}
+                                    of {{ lesson.capacity }} available
+                                </span>
+                            </div>
+                        </div>
+
+                        <button class="add-button"
+                                type="button"
+                                :disabled="remainingSpaces(lesson) === 0"
+                                @click="addToCart(lesson)">
+
+                            <i class="fa-solid fa-plus"></i>
+
+                            {{ remainingSpaces(lesson) === 0
+                                ? 'Fully Booked'
+                                : 'Add to Cart' }}
+                        </button>
+
+                        <div class="in-cart-note"
+                             v-if="quantityInCart(lesson.id) > 0">
+                            <i class="fa-solid fa-circle-check"></i>
+                            {{ quantityInCart(lesson.id) }} in your cart
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </main>
+    </template>
+
+    <!-- CART PAGE -->
+    <main class="checkout-page" v-if="currentPage === 'cart'">
+
+        <button class="back-button" type="button" @click="goHome">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Lessons
+        </button>
+
+        <h1 class="checkout-title">Your Cart</h1>
+
+        <p class="checkout-subtitle">
+            {{ cartCount }} lesson seats selected.
+            Review your lessons, then enter your details to check out.
+        </p>
+
+        <div class="checkout-grid">
+
+            <div class="checkout-card">
+                <h2>
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    Selected Lessons
+                </h2>
+
+                <div v-if="cartDetails.length === 0" class="empty-cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <p>Your cart is empty.</p>
+                </div>
+
+                <div class="cart-item"
+                     v-for="item in cartDetails"
+                     :key="item.id">
+
+                    <img class="cart-item-image"
+                         :src="item.image"
+                         :alt="item.subject">
+
+                    <div class="cart-item-info">
+                        <h3>{{ item.subject }}</h3>
+
+                        <p class="cart-item-location">
+                            <i class="fa-solid fa-location-dot"></i>
+                            {{ item.location }}
+                        </p>
+
+                        <div class="cart-item-price">
+                            AED {{ item.price * item.quantity }}
+                        </div>
+
+                        <div class="cart-controls">
+
+                            <div class="quantity-control">
+                                <button type="button"
+                                        :aria-label="'Decrease ' + item.subject"
+                                        @click="decreaseQuantity(item.id)">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+
+                                <span>{{ item.quantity }}</span>
+
+                                <button type="button"
+                                        :aria-label="'Increase ' + item.subject"
+                                        :disabled="remainingSpaces(item) === 0"
+                                        @click="increaseQuantity(item.id)">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+
+                            <button class="remove-button"
+                                    type="button"
+                                    @click="removeFromCart(item.id)">
+                                <i class="fa-solid fa-trash"></i>
+                                Remove
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cart-grand-total">
+                    <span>Total</span>
+                    <span>AED {{ cartTotal }}</span>
+                </div>
+            </div>
+
+            <!-- CHECKOUT FORM -->
+            <div class="checkout-card">
+                <h2>
+                    <i class="fa-regular fa-user"></i>
+                    Checkout
+                </h2>
+
+                <form @submit.prevent="placeBooking" novalidate>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+
+                            <input id="firstName"
+                                   type="text"
+                                   v-model.trim="customer.firstName"
+                                   placeholder="Enter first name"
+                                   :class="{ 'input-error': showError('firstName') }"
+                                   @blur="markTouched('firstName')">
+
+                            <div class="error-message"
+                                 v-if="showError('firstName')">
+                                Please enter a valid first name.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+
+                            <input id="lastName"
+                                   type="text"
+                                   v-model.trim="customer.lastName"
+                                   placeholder="Enter last name"
+                                   :class="{ 'input-error': showError('lastName') }"
+                                   @blur="markTouched('lastName')">
+
+                            <div class="error-message"
+                                 v-if="showError('lastName')">
+                                Please enter a valid last name.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+
+                        <input id="email"
+                               type="email"
+                               inputmode="email"
+                               autocomplete="email"
+                               v-model.trim="customer.email"
+                               placeholder="name@example.com"
+                               :class="{ 'input-error': showError('email') }"
+                               @blur="markTouched('email')">
+
+                        <div class="error-message"
+                             v-if="showError('email')">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+
+                        <div class="phone-input-group">
+                            <select class="country-select"
+                                    v-model="customer.country"
+                                    aria-label="Country calling code"
+                                    @change="onCountryChange">
+
+                                <option v-for="country in countries"
+                                        :key="country.code"
+                                        :value="country.code">
+                                    {{ country.flag }} {{ country.dial }}
+                                </option>
+                            </select>
+
+                            <input id="phone"
+                                   type="tel"
+                                   inputmode="numeric"
+                                   autocomplete="tel-national"
+                                   v-model="customer.phone"
+                                   :placeholder="selectedCountry.example"
+                                   :class="{ 'input-error': showError('phone') }"
+                                   @input="sanitizePhone"
+                                   @blur="markTouched('phone')">
+                        </div>
+
+                        <div class="error-message"
+                             v-if="showError('phone')">
+                            {{ selectedCountry.error }}
+                        </div>
+                    </div>
+
+                    <button class="primary-button"
+                            type="submit"
+                            :disabled="hasErrors || cartCount === 0">
+                        <i class="fa-solid fa-check-circle"></i>
+                        Checkout
+                    </button>
+
+                    <p class="checkout-hint" v-if="hasErrors">
+                        Enter a valid name, email and phone number
+                        to enable checkout.
+                    </p>
+
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- CONFIRMATION PAGE -->
+    <main class="success-page" v-if="currentPage === 'success'">
+
+        <div class="success-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <h1>Order Submitted!</h1>
+
+        <p>
+            Thank you, {{ customer.firstName }}!
+            Your order has been submitted.
+        </p>
+
+        <div class="confirmation-details">
+
+            <div class="confirmation-row">
+                <span>Booking Reference</span>
+                <strong>{{ bookingReference }}</strong>
+            </div>
+
+            <div class="confirmation-row">
+                <span>Customer</span>
+                <strong>
+                    {{ customer.firstName }} {{ customer.lastName }}
+                </strong>
+            </div>
+
+            <div class="confirmation-row">
+                <span>Lesson Seats</span>
+                <strong>{{ confirmedCount }}</strong>
+            </div>
+
+            <div class="confirmation-row">
+                <span>Total</span>
+                <strong>AED {{ confirmedTotal }}</strong>
+            </div>
+
+        </div>
+
+        <button class="primary-button" type="button" @click="goHome">
+            Back to Lessons
+        </button>
+    </main>
+
+    <!-- NOTIFICATION -->
+    <div class="toast"
+         v-if="toastMessage"
+         role="status"
+         aria-live="polite">
+        <i class="fa-solid fa-circle-check"></i>
+        {{ toastMessage }}
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        &copy; 2026 EduSpace. Learn. Grow. Succeed.
+    </footer>
+
+</div>
+
+<script>
+    if (typeof Vue !== "undefined" && typeof lessons !== "undefined") {
+
+        new Vue({
+            el: "#app",
+
+            data: {
+                lessons: lessons.map(function(lesson) {
+                    return Object.assign({}, lesson);
+                }),
+
+                cart: [],
+
+                // Sorting and search
+                sortBy: "subject",
+                sortOrder: "asc",
+                searchQuery: "",
+
+                currentPage: "home",
+                toastMessage: "",
+
+                bookingReference: "",
+                confirmedCount: 0,
+                confirmedTotal: 0,
+
+                formSubmitted: false,
+
+                touched: {
+                    firstName: false,
+                    lastName: false,
+                    email: false,
+                    phone: false
+                },
+
+                customer: {
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    country: "AE",
+                    phone: ""
+                },
+
+                countries: [
+                    {
+                        code: "AE",
+                        flag: "🇦🇪",
+                        dial: "+971",
+                        example: "0501234567",
+                        error: "Enter a valid UAE mobile number.",
+                        pattern: /^(?:05[024568]\d{7}|5[024568]\d{7})$/
+                    },
+                    {
+                        code: "EG",
+                        flag: "🇪🇬",
+                        dial: "+20",
+                        example: "01012345678",
+                        error: "Enter a valid Egyptian mobile number.",
+                        pattern: /^(?:01[0125]\d{8}|1[0125]\d{8})$/
+                    },
+                    {
+                        code: "SA",
+                        flag: "🇸🇦",
+                        dial: "+966",
+                        example: "0512345678",
+                        error: "Enter a valid Saudi mobile number.",
+                        pattern: /^(?:05\d{8}|5\d{8})$/
+                    },
+                    {
+                        code: "GB",
+                        flag: "🇬🇧",
+                        dial: "+44",
+                        example: "07123456789",
+                        error: "Enter a valid UK mobile number.",
+                        pattern: /^(?:07\d{9}|7\d{9})$/
+                    },
+                    {
+                        code: "US",
+                        flag: "🇺🇸",
+                        dial: "+1",
+                        example: "2025550123",
+                        error: "Enter a valid US phone number.",
+                        pattern: /^[2-9]\d{2}[2-9]\d{6}$/
+                    },
+                    {
+                        code: "IN",
+                        flag: "🇮🇳",
+                        dial: "+91",
+                        example: "9876543210",
+                        error: "Enter a valid Indian mobile number.",
+                        pattern: /^[6-9]\d{9}$/
+                    }
+                ]
+            },
+
+            computed: {
+
+                selectedCountry: function() {
+                    return this.countries.find(function(country) {
+                        return country.code === this.customer.country;
+                    }.bind(this)) || this.countries[0];
+                },
+
+                // SEARCH AND SORTING
+                sortedLessons: function() {
+                    const self = this;
+                    const attribute = this.sortBy;
+                    const direction = this.sortOrder === "asc" ? 1 : -1;
+
+                    const search = this.searchQuery.trim().toLowerCase();
+
+                    const filteredLessons = this.lessons.filter(function(lesson) {
+                        return (
+                            lesson.subject.toLowerCase().includes(search) ||
+                            lesson.location.toLowerCase().includes(search)
+                        );
+                    });
+
+                    return filteredLessons.slice().sort(function(a, b) {
+                        let first;
+                        let second;
+
+                        if (attribute === "spaces") {
+                            first = self.remainingSpaces(a);
+                            second = self.remainingSpaces(b);
+                        } else {
+                            first = a[attribute];
+                            second = b[attribute];
+                        }
+
+                        let result;
+
+                        if (typeof first === "string") {
+                            result = first.localeCompare(second);
+                        } else {
+                            result = first - second;
+                        }
+
+                        if (result !== 0) {
+                            return result * direction;
+                        }
+
+                        return a.id - b.id;
+                    });
+                },
+
+                ascLabel: function() {
+                    return (
+                        this.sortBy === "price" ||
+                        this.sortBy === "spaces"
+                    ) ? "Low to high" : "A to Z";
+                },
+
+                descLabel: function() {
+                    return (
+                        this.sortBy === "price" ||
+                        this.sortBy === "spaces"
+                    ) ? "High to low" : "Z to A";
+                },
+
+                cartCount: function() {
+                    return this.cart.reduce(function(total, item) {
+                        return total + item.quantity;
+                    }, 0);
+                },
+
+                cartDetails: function() {
+                    const self = this;
+
+                    return this.cart.map(function(item) {
+                        const lesson = self.lessons.find(function(lesson) {
+                            return lesson.id === item.id;
+                        });
+
+                        return lesson
+                            ? Object.assign({}, lesson, {
+                                quantity: item.quantity
+                            })
+                            : null;
+                    }).filter(function(item) {
+                        return item !== null;
+                    });
+                },
+
+                cartTotal: function() {
+                    return this.cartDetails.reduce(function(total, item) {
+                        return total + item.price * item.quantity;
+                    }, 0);
+                },
+
+                fieldErrors: function() {
+                    const errors = {};
+
+                    const namePattern = /^[\p{L}\s]+$/u;
+
+                    if (!namePattern.test(this.customer.firstName.trim())) {
+                        errors.firstName = true;
+                    }
+
+                    if (!namePattern.test(this.customer.lastName.trim())) {
+                        errors.lastName = true;
+                    }
+
+                    const emailPattern =
+                        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/;
+
+                    if (!emailPattern.test(this.customer.email.trim())) {
+                        errors.email = true;
+                    }
+
+                    const phone = this.customer.phone.replace(/\D/g, "");
+
+                    if (!this.selectedCountry.pattern.test(phone)) {
+                        errors.phone = true;
+                    }
+
+                    return errors;
+                },
+
+                hasErrors: function() {
+                    return Object.keys(this.fieldErrors).length > 0;
+                }
+            },
+
+            watch: {
+                cartCount: function(value) {
+                    if (value === 0 && this.currentPage === "cart") {
+                        this.currentPage = "home";
+                        window.scrollTo(0, 0);
+                    }
+                }
+            },
+
+            methods: {
+
+                // VALIDATION
+                markTouched: function(field) {
+                    this.touched[field] = true;
+                },
+
+                showError: function(field) {
+                    return (
+                        this.formSubmitted ||
+                        this.touched[field]
+                    ) && !!this.fieldErrors[field];
+                },
+
+                sanitizePhone: function() {
+                    this.customer.phone =
+                        this.customer.phone.replace(/\D/g, "");
+                },
+
+                onCountryChange: function() {
+                    this.customer.phone = "";
+                    this.touched.phone = false;
+                },
+
+                normalizedPhone: function() {
+                    let number = this.customer.phone.replace(/\D/g, "");
+
+                    if (
+                        ["AE", "EG", "SA", "GB"].includes(this.customer.country) &&
+                        number.startsWith("0")
+                    ) {
+                        number = number.substring(1);
+                    }
+
+                    return this.selectedCountry.dial + number;
+                },
+
+                // CART
+                quantityInCart: function(id) {
+                    const item = this.cart.find(function(item) {
+                        return item.id === id;
+                    });
+
+                    return item ? item.quantity : 0;
+                },
+
+                remainingSpaces: function(lesson) {
+                    return Math.max(
+                        0,
+                        lesson.spaces - this.quantityInCart(lesson.id)
+                    );
+                },
+
+                availabilityPercent: function(lesson) {
+                    return lesson.capacity > 0
+                        ? this.remainingSpaces(lesson) / lesson.capacity * 100
+                        : 0;
+                },
+
+                availabilityColor: function(lesson) {
+                    const remaining = this.remainingSpaces(lesson);
+                    const percent = this.availabilityPercent(lesson);
+
+                    if (remaining === 0) return "#94a3b8";
+                    if (percent <= 20) return "#e25c56";
+                    if (percent <= 60) return "#e6a23c";
+
+                    return "#22a06b";
+                },
+
+                availabilityStatus: function(lesson) {
+                    const remaining = this.remainingSpaces(lesson);
+                    const percent = this.availabilityPercent(lesson);
+
+                    if (remaining === 0) return "Fully booked";
+                    if (percent <= 20) return "Filling fast!";
+                    if (percent <= 60) return "Limited availability";
+
+                    return "Plenty of spaces";
+                },
+
+                addToCart: function(lesson) {
+                    if (this.remainingSpaces(lesson) <= 0) {
+                        this.showToast("No spaces remaining.");
+                        return;
+                    }
+
+                    const item = this.cart.find(function(item) {
+                        return item.id === lesson.id;
+                    });
+
+                    if (item) {
+                        item.quantity += 1;
+                    } else {
+                        this.cart.push({
+                            id: lesson.id,
+                            quantity: 1
+                        });
+                    }
+
+                    this.showToast(lesson.subject + " added to cart!");
+                },
+
+                increaseQuantity: function(id) {
+                    const lesson = this.lessons.find(function(lesson) {
+                        return lesson.id === id;
+                    });
+
+                    if (lesson) {
+                        this.addToCart(lesson);
+                    }
+                },
+
+                decreaseQuantity: function(id) {
+                    const item = this.cart.find(function(item) {
+                        return item.id === id;
+                    });
+
+                    if (!item) return;
+
+                    if (item.quantity > 1) {
+                        item.quantity -= 1;
+                    } else {
+                        this.removeFromCart(id);
+                    }
+                },
+
+                removeFromCart: function(id) {
+                    this.cart = this.cart.filter(function(item) {
+                        return item.id !== id;
+                    });
+
+                    this.showToast("Lesson removed from cart.");
+                },
+
+                toggleCart: function() {
+                    if (this.currentPage === "cart") {
+                        this.goHome();
+                        return;
+                    }
+
+                    if (this.cartCount > 0) {
+                        this.currentPage = "cart";
+                        window.scrollTo(0, 0);
+                    }
+                },
+
+                // NAVIGATION
+                goHome: function() {
+                    this.currentPage = "home";
+                    this.formSubmitted = false;
+                    window.scrollTo(0, 0);
+                },
+
+                // BOOKING
+                placeBooking: function() {
+                    this.formSubmitted = true;
+
+                    if (this.hasErrors || this.cartCount === 0) {
+                        return;
+                    }
+
+                    const bookingReference = "EDU-" + Date.now();
+
+                    this.bookingReference = bookingReference;
+                    this.confirmedCount = this.cartCount;
+                    this.confirmedTotal = this.cartTotal;
+
+                    const self = this;
+
+                    this.cart.forEach(function(item) {
+                        const lesson = self.lessons.find(function(lesson) {
+                            return lesson.id === item.id;
+                        });
+
+                        if (lesson) {
+                            lesson.spaces = Math.max(
+                                0,
+                                lesson.spaces - item.quantity
+                            );
+                        }
+                    });
+
+                    this.cart = [];
+                    this.currentPage = "success";
+                    this.toastMessage = "";
+
+                    window.scrollTo(0, 0);
+                },
+
+                showToast: function(message) {
+                    this.toastMessage = message;
+                }
+            }
+        });
+
+    } else {
+        if (typeof Vue === "undefined") {
+            document.body.innerHTML =
+                "Vue.js did not load. Check your internet connection.";
+        }
+
+        if (typeof lessons === "undefined") {
+            document.body.innerHTML =
+                "lessons.js did not load. Make sure it is in the same folder as index.html.";
+        }
+    }
+</script>
+
+</body>
+</html>
