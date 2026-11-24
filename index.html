@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,18 +7,47 @@
 
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
-    <script src="./lessons.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@400;500;600;700&display=swap">
 
     <style>
+        /* DESIGN TOKENS */
+        :root {
+            --board: #1f3d34;        /* chalkboard green */
+            --board-deep: #17302a;
+            --leaf: #2f6b57;         /* interactive green */
+            --paper: #f4f5f0;        /* page background */
+            --card: #ffffff;
+            --ink: #1a2420;          /* main text */
+            --muted: #5f6b66;
+            --line: #dde2da;
+            --line-strong: #c3ccc2;
+            --highlight: #f3d64e;    /* highlighter yellow */
+            --danger: #b4432f;
+            --wood: #8a6a4a;
+
+            --font-display: "Bricolage Grotesque", "Segoe UI", Arial, sans-serif;
+            --font-body: "Figtree", "Segoe UI", Arial, sans-serif;
+        }
+
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            background: #f6f7fb;
-            color: #1e293b;
-            font-family: Arial, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            letter-spacing: -0.02em;
         }
 
         button, input, select {
@@ -34,142 +62,167 @@
             cursor: not-allowed;
         }
 
+        button:focus-visible,
+        select:focus-visible,
+        input:focus-visible,
+        .logo:focus-visible {
+            outline: 3px solid var(--highlight);
+            outline-offset: 2px;
+        }
+
         [v-cloak] {
             display: none;
         }
 
         /* NAVIGATION */
         .navbar {
-            background: #172d54;
-            color: white;
-            padding: 20px 7%;
+            background: var(--board-deep);
+            color: var(--paper);
+            padding: 18px 7%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .logo {
-            font-size: 25px;
+            font-family: var(--font-display);
+            font-size: 24px;
             font-weight: 800;
-            letter-spacing: -1px;
+            letter-spacing: -0.03em;
             cursor: pointer;
         }
 
         .logo i {
-            color: #93c5fd;
+            color: var(--highlight);
             margin-right: 8px;
         }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 22px;
         }
 
         .nav-link {
-            color: #e2e8f0;
+            color: rgba(244, 245, 240, 0.72);
             font-size: 14px;
             font-weight: 600;
         }
 
         .cart-nav-button {
-            background: rgba(255,255,255,0.13);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            padding: 12px 16px;
+            background: transparent;
+            color: var(--paper);
+            border: 1px solid rgba(244, 245, 240, 0.28);
+            border-radius: 999px;
+            padding: 10px 12px 10px 18px;
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 600;
+            transition: background 0.2s, border-color 0.2s;
         }
 
-        .cart-nav-button:hover {
-            background: rgba(255,255,255,0.23);
+        .cart-nav-button:hover:not(:disabled),
+        .cart-nav-button.active {
+            background: rgba(244, 245, 240, 0.1);
+            border-color: rgba(244, 245, 240, 0.5);
         }
 
         .cart-nav-button:disabled {
-            opacity: 0.5;
+            opacity: 0.45;
         }
 
         .cart-count {
-            background: #60a5fa;
-            color: #0f2343;
-            min-width: 23px;
-            height: 23px;
-            border-radius: 50%;
+            background: var(--highlight);
+            color: var(--ink);
+            min-width: 24px;
+            height: 24px;
+            border-radius: 999px;
             display: inline-flex;
             justify-content: center;
             align-items: center;
             font-size: 12px;
-            padding: 0 5px;
+            font-weight: 700;
+            padding: 0 7px;
         }
 
-        /* HERO */
+        /* HERO (chalkboard) */
         .hero {
-            background: linear-gradient(135deg, #172d54, #274c82);
-            color: white;
-            padding: 85px 7%;
+            background-color: var(--board);
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0,
+                transparent 47px,
+                rgba(255, 255, 255, 0.045) 47px,
+                rgba(255, 255, 255, 0.045) 48px
+            );
+            color: var(--paper);
+            padding: 90px 7% 96px;
+            border-bottom: 10px solid var(--wood);
         }
 
         .hero-content {
-            max-width: 700px;
+            max-width: 720px;
         }
 
         .eyebrow {
-            color: #bfdbfe;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 3px;
-            font-weight: bold;
+            display: inline-block;
+            color: var(--highlight);
+            font-size: 15px;
+            font-weight: 600;
         }
 
         .hero h1 {
-            font-size: clamp(36px, 5vw, 60px);
-            line-height: 1.12;
-            margin: 18px 0;
-            letter-spacing: -2px;
+            font-size: clamp(42px, 6vw, 74px);
+            font-weight: 800;
+            line-height: 1.02;
+            margin: 14px 0 22px;
+            letter-spacing: -0.035em;
         }
 
         .hero p {
-            font-size: 17px;
-            line-height: 1.7;
-            color: #dbeafe;
+            font-size: 18px;
+            line-height: 1.65;
+            color: rgba(244, 245, 240, 0.78);
+            max-width: 560px;
+            margin: 0;
         }
 
         /* MAIN */
         .container {
-            max-width: 1250px;
+            max-width: 1240px;
             margin: 0 auto;
-            padding: 55px 25px;
+            padding: 64px 28px 80px;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 26px;
+            gap: 16px;
         }
 
         .section-header h2 {
-            font-size: 30px;
-            margin: 0 0 8px;
-            color: #172d54;
+            font-size: 34px;
+            font-weight: 700;
+            margin: 0 0 6px;
+            color: var(--ink);
         }
 
         .section-header p {
-            color: #64748b;
+            color: var(--muted);
             margin: 0;
         }
 
         .count-badge {
-            background: #e0ecff;
-            color: #1d4ed8;
-            padding: 10px 18px;
-            border-radius: 30px;
-            font-weight: bold;
+            color: var(--board);
+            background: #e4ebe2;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-weight: 600;
             font-size: 13px;
             white-space: nowrap;
         }
@@ -180,31 +233,42 @@
             flex-wrap: nowrap;
             align-items: center;
             gap: 12px;
-            background: white;
-            border: 1px solid #e9edf4;
-            border-radius: 14px;
-            padding: 16px 20px;
-            margin-bottom: 28px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 32px;
             min-width: 0;
         }
 
         .sort-bar label {
             font-size: 13px;
-            font-weight: 700;
-            color: #475569;
+            font-weight: 600;
+            color: var(--muted);
             white-space: nowrap;
             flex-shrink: 0;
         }
 
+        .sort-bar label i {
+            margin-right: 4px;
+        }
+
         .sort-bar select {
             padding: 10px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            background: white;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--paper);
             font-size: 14px;
-            color: #1e293b;
+            font-weight: 500;
+            color: var(--ink);
             flex: 0 0 auto;
-            max-width: 190px;
+            max-width: 200px;
+        }
+
+        .sort-bar select:focus {
+            border-color: var(--leaf);
+            box-shadow: 0 0 0 3px rgba(47, 107, 87, 0.15);
+            outline: none;
         }
 
         /* SEARCH BAR */
@@ -221,8 +285,8 @@
 
         .search-control label {
             font-size: 13px;
-            font-weight: 700;
-            color: #475569;
+            font-weight: 600;
+            color: var(--muted);
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -235,72 +299,84 @@
 
         .search-input-wrapper i {
             position: absolute;
-            left: 13px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #94a3b8;
+            color: var(--muted);
+            font-size: 14px;
         }
 
         .search-control input {
             display: block;
             width: 100%;
             min-width: 0;
-            padding: 10px 14px 10px 38px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            background: white;
+            padding: 10px 14px 10px 40px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--paper);
             font-size: 14px;
             outline: none;
-            color: #1e293b;
+            color: var(--ink);
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .search-control input::placeholder {
+            color: #8b958f;
         }
 
         .search-control input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px #dbeafe;
+            border-color: var(--leaf);
+            background: var(--card);
+            box-shadow: 0 0 0 3px rgba(47, 107, 87, 0.15);
         }
 
         .no-results {
             grid-column: 1 / -1;
-            background: white;
-            border: 1px solid #e9edf4;
-            border-radius: 14px;
-            padding: 45px 20px;
+            background: var(--card);
+            border: 1px dashed var(--line-strong);
+            border-radius: 12px;
+            padding: 52px 20px;
             text-align: center;
-            color: #64748b;
+            color: var(--muted);
         }
 
         .no-results i {
             display: block;
-            font-size: 35px;
-            margin-bottom: 15px;
-            color: #94a3b8;
+            font-size: 30px;
+            margin-bottom: 14px;
+            color: var(--line-strong);
+        }
+
+        .no-results strong {
+            color: var(--ink);
+            font-size: 17px;
         }
 
         /* LESSON CARDS */
         .lesson-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 26px;
+            gap: 24px;
         }
 
         .lesson-card {
-            background: white;
-            border-radius: 18px;
+            background: var(--card);
+            border-radius: 14px;
             overflow: hidden;
-            border: 1px solid #e9edf4;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.035);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.2s;
         }
 
         .lesson-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 16px 35px rgba(23,45,84,0.12);
+            border-color: var(--line-strong);
         }
 
         .image-container {
-            height: 205px;
+            height: 190px;
             overflow: hidden;
-            background: #dbeafe;
+            background: #e4ebe2;
             position: relative;
         }
 
@@ -309,68 +385,63 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: transform 0.4s ease;
         }
 
-        .lesson-card:hover .lesson-image {
-            transform: scale(1.06);
-        }
-
+        /* the subject already appears as the card title */
         .category-tag {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(255,255,255,0.95);
-            color: #172d54;
-            padding: 7px 12px;
-            border-radius: 7px;
-            font-size: 12px;
-            font-weight: bold;
+            display: none;
         }
 
         .lesson-content {
-            padding: 23px;
+            padding: 22px 22px 24px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         .lesson-content h3 {
-            margin: 0 0 15px;
-            font-size: 21px;
-            color: #172d54;
+            margin: 0 0 6px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ink);
         }
 
         .lesson-location {
-            color: #64748b;
+            color: var(--muted);
             font-size: 14px;
-            margin-bottom: 20px;
+            margin: 0 0 18px;
         }
 
         .lesson-location i {
-            color: #3b82f6;
-            margin-right: 7px;
+            color: var(--leaf);
+            margin-right: 6px;
         }
 
         .lesson-footer {
-            padding-bottom: 18px;
+            padding-bottom: 16px;
         }
 
         .price {
-            font-size: 21px;
-            font-weight: 800;
-            color: #172d54;
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: -0.02em;
         }
 
         .price small {
-            font-size: 12px;
-            font-weight: normal;
-            color: #94a3b8;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0;
         }
 
         /* AVAILABILITY */
         .availability-box {
-            padding: 17px;
-            background: #f8fafc;
-            border: 1px solid #edf0f5;
-            border-radius: 12px;
+            padding: 14px 16px;
+            background: var(--paper);
+            border-radius: 10px;
         }
 
         .availability-top,
@@ -382,13 +453,13 @@
         }
 
         .availability-top {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .availability-title {
             font-size: 13px;
             font-weight: 600;
-            color: #64748b;
+            color: var(--muted);
         }
 
         .availability-title i {
@@ -397,130 +468,155 @@
 
         .availability-number {
             font-size: 14px;
-            font-weight: 800;
+            font-weight: 700;
         }
 
         .availability-track {
-            height: 9px;
-            background: #e5eaf2;
-            border-radius: 20px;
+            height: 6px;
+            background: #e1e6df;
+            border-radius: 999px;
             overflow: hidden;
         }
 
         .availability-fill {
             height: 100%;
-            border-radius: 20px;
+            border-radius: 999px;
             transition: width 0.35s ease, background-color 0.35s ease;
         }
 
         .availability-bottom {
-            margin-top: 11px;
-            font-size: 11px;
-            color: #64748b;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--muted);
         }
 
         .availability-status {
-            font-weight: 700;
+            font-weight: 600;
         }
 
         /* BUTTONS */
         .add-button,
         .primary-button {
             width: 100%;
-            padding: 15px 18px;
-            background: #172d54;
-            color: white;
+            padding: 14px 18px;
+            background: var(--board);
+            color: var(--paper);
             border: none;
-            border-radius: 11px;
-            font-size: 14px;
-            font-weight: 700;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
             transition: background 0.2s;
         }
 
         .add-button {
+            margin-top: auto;
+        }
+
+        .availability-box + .add-button {
             margin-top: 18px;
+        }
+
+        .add-button i,
+        .primary-button i {
+            margin-right: 6px;
         }
 
         .add-button:hover:not(:disabled),
         .primary-button:hover:not(:disabled) {
-            background: #2563eb;
+            background: var(--leaf);
         }
 
         .add-button:disabled,
         .primary-button:disabled {
-            background: #cbd5e1;
-            color: #64748b;
+            background: #e4e7e1;
+            color: #8a948f;
         }
 
         .in-cart-note {
             text-align: center;
-            margin-top: 11px;
-            color: #2563eb;
-            font-size: 12px;
-            font-weight: 700;
+            margin-top: 12px;
+            color: var(--leaf);
+            font-size: 13px;
+            font-weight: 600;
         }
 
         /* CART AND CHECKOUT */
         .checkout-page {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 50px 24px 90px;
+            padding: 48px 28px 96px;
         }
 
         .back-button {
             border: none;
             background: none;
-            color: #2563eb;
+            color: var(--leaf);
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 600;
             padding: 0;
-            margin-bottom: 28px;
+            margin-bottom: 26px;
+        }
+
+        .back-button:hover {
+            color: var(--board);
+        }
+
+        .back-button i {
+            margin-right: 6px;
         }
 
         .checkout-title {
-            font-size: 36px;
-            color: #172d54;
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--ink);
             margin: 0 0 8px;
         }
 
         .checkout-subtitle {
-            color: #64748b;
-            margin-bottom: 35px;
+            color: var(--muted);
+            margin: 0 0 36px;
         }
 
         .checkout-grid {
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
-            gap: 28px;
+            gap: 24px;
             align-items: start;
         }
 
         .checkout-card {
-            background: white;
-            padding: 32px;
-            border-radius: 18px;
-            border: 1px solid #e9edf4;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.035);
+            background: var(--card);
+            padding: 30px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
         }
 
         .checkout-card h2 {
-            margin: 0 0 25px;
-            color: #172d54;
+            margin: 0 0 8px;
+            color: var(--ink);
             font-size: 22px;
+            font-weight: 700;
+        }
+
+        .checkout-card h2 i {
+            color: var(--leaf);
+            margin-right: 8px;
+            font-size: 18px;
         }
 
         .cart-item {
             display: flex;
-            gap: 15px;
+            gap: 16px;
             padding: 20px 0;
-            border-bottom: 1px solid #edf0f5;
+            border-bottom: 1px solid var(--line);
         }
 
         .cart-item-image {
-            width: 88px;
-            height: 88px;
-            border-radius: 12px;
+            width: 84px;
+            height: 84px;
+            border-radius: 10px;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
         .cart-item-info {
@@ -529,124 +625,166 @@
         }
 
         .cart-item-info h3 {
-            font-size: 16px;
-            margin: 0 0 7px;
-            color: #172d54;
+            font-size: 17px;
+            font-weight: 700;
+            margin: 0 0 4px;
+            color: var(--ink);
         }
 
         .cart-item-location {
-            font-size: 12px;
-            color: #64748b;
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0 0 6px;
+        }
+
+        .cart-item-location i {
+            color: var(--leaf);
+            margin-right: 4px;
         }
 
         .cart-item-price {
-            font-size: 14px;
-            font-weight: 800;
-            color: #172d54;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
         }
 
         .cart-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 13px;
+            margin-top: 12px;
             gap: 10px;
         }
 
         .quantity-control {
             display: flex;
             align-items: center;
-            border: 1px solid #e2e8f0;
-            border-radius: 9px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
             overflow: hidden;
+            background: var(--paper);
         }
 
         .quantity-control button {
-            width: 33px;
-            height: 33px;
-            background: #f8fafc;
+            width: 34px;
+            height: 34px;
+            background: transparent;
             border: none;
+            color: var(--ink);
+            font-size: 12px;
+        }
+
+        .quantity-control button:hover:not(:disabled) {
+            background: #e4ebe2;
+        }
+
+        .quantity-control button:disabled {
+            color: #b5bdb8;
         }
 
         .quantity-control span {
-            width: 34px;
+            width: 30px;
             text-align: center;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
         }
 
         .remove-button {
             background: none;
             border: none;
-            color: #e25c56;
-            font-size: 12px;
-            font-weight: 700;
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .remove-button i {
+            margin-right: 4px;
+        }
+
+        .remove-button:hover {
+            text-decoration: underline;
         }
 
         .cart-grand-total {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #edf0f5;
-            padding-top: 17px;
-            margin-top: 17px;
-            font-size: 20px;
-            font-weight: 800;
-            color: #172d54;
+            align-items: baseline;
+            padding-top: 20px;
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .cart-grand-total span:first-child {
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--muted);
         }
 
         .empty-cart {
             text-align: center;
-            padding: 55px 10px;
-            color: #64748b;
+            padding: 52px 10px;
+            color: var(--muted);
         }
 
         .empty-cart i {
-            font-size: 45px;
-            color: #cbd5e1;
-            margin-bottom: 15px;
+            font-size: 40px;
+            color: var(--line-strong);
+            margin-bottom: 12px;
         }
 
         /* FORM */
+        form {
+            margin-top: 22px;
+        }
+
         .form-group {
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
             font-size: 13px;
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 9px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 8px;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 14px 15px;
-            border: 1px solid #dbe2ed;
-            border-radius: 10px;
+            padding: 13px 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
             outline: none;
             font-size: 15px;
-            background: white;
-            color: #1e293b;
+            background: var(--paper);
+            color: var(--ink);
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .form-group input::placeholder {
+            color: #8b958f;
         }
 
         .form-group input:focus,
         .form-group select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px #dbeafe;
+            border-color: var(--leaf);
+            background: var(--card);
+            box-shadow: 0 0 0 3px rgba(47, 107, 87, 0.15);
         }
 
         .form-group input.input-error {
-            border-color: #ef4444;
-            background: #fffafa;
+            border-color: var(--danger);
+            background: #fdf6f4;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 14px;
         }
 
         .phone-input-group {
@@ -655,11 +793,10 @@
         }
 
         .country-select {
-            width: 115px !important;
+            width: 112px !important;
             flex-shrink: 0;
             font-size: 14px !important;
-            padding: 12px 9px !important;
-            background: #f8fafc !important;
+            padding: 12px 8px !important;
         }
 
         .phone-input-group input {
@@ -668,60 +805,62 @@
         }
 
         .error-message {
-            margin-top: 9px;
-            color: #dc2626;
-            font-size: 12px;
-            font-weight: 600;
+            margin-top: 8px;
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 500;
             line-height: 1.5;
         }
 
         .checkout-hint {
             font-size: 13px;
-            color: #64748b;
+            color: var(--muted);
             margin: 12px 0 0;
             text-align: center;
         }
 
         /* SUCCESS PAGE */
         .success-page {
-            max-width: 650px;
-            margin: 75px auto;
-            padding: 55px 35px;
-            background: white;
-            border-radius: 22px;
+            max-width: 620px;
+            margin: 72px auto;
+            padding: 52px 40px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(23,45,84,0.07);
         }
 
         .success-icon {
-            width: 90px;
-            height: 90px;
-            background: #dcfce7;
-            color: #16a34a;
+            width: 76px;
+            height: 76px;
+            background: var(--highlight);
+            color: var(--ink);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 42px;
-            margin: 0 auto 25px;
+            font-size: 32px;
+            margin: 0 auto 24px;
         }
 
         .success-page h1 {
-            color: #172d54;
-            font-size: 32px;
+            color: var(--ink);
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0 0 8px;
         }
 
         .success-page p {
-            color: #64748b;
+            color: var(--muted);
             line-height: 1.7;
+            margin: 0;
         }
 
         .confirmation-details {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 20px;
-            margin: 25px 0;
+            background: var(--paper);
+            border-radius: 12px;
+            padding: 8px 20px;
+            margin: 28px 0;
             text-align: left;
         }
 
@@ -729,12 +868,18 @@
             display: flex;
             justify-content: space-between;
             gap: 15px;
-            padding: 10px 0;
+            padding: 12px 0;
             font-size: 14px;
+            color: var(--muted);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .confirmation-row:last-child {
+            border-bottom: none;
         }
 
         .confirmation-row strong {
-            color: #172d54;
+            color: var(--ink);
         }
 
         /* TOAST */
@@ -743,31 +888,56 @@
             bottom: 28px;
             left: 50%;
             transform: translateX(-50%);
-            background: #172d54;
-            color: white;
-            padding: 14px 22px;
-            border-radius: 12px;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+            background: var(--ink);
+            color: var(--paper);
+            padding: 13px 20px;
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(26, 36, 32, 0.25);
             z-index: 110;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             max-width: calc(100% - 30px);
             text-align: center;
+            animation: toast-in 0.25s ease-out;
+        }
+
+        .toast i {
+            color: var(--highlight);
+            margin-right: 6px;
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 10px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
         }
 
         /* FOOTER */
         footer {
-            background: #172d54;
-            color: #cbd5e1;
-            padding: 30px 7%;
+            background: var(--board-deep);
+            color: rgba(244, 245, 240, 0.6);
+            padding: 28px 7%;
             text-align: center;
             font-size: 14px;
         }
 
+        /* REDUCED MOTION */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
         /* RESPONSIVE */
-        @media (max-width: 850px) {
+        @media (max-width: 900px) {
             .lesson-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .checkout-grid {
@@ -794,7 +964,7 @@
             }
 
             .navbar {
-                padding: 18px 5%;
+                padding: 16px 5%;
             }
 
             .nav-link {
@@ -802,7 +972,7 @@
             }
 
             .hero {
-                padding: 60px 6%;
+                padding: 60px 6% 66px;
             }
 
             .section-header {
@@ -811,11 +981,24 @@
             }
 
             .container {
-                padding: 35px 18px;
+                padding: 40px 18px 64px;
+            }
+
+            .checkout-page {
+                padding: 36px 18px 72px;
+            }
+
+            .checkout-title {
+                font-size: 34px;
             }
 
             .checkout-card {
                 padding: 22px;
+            }
+
+            .success-page {
+                margin: 40px 18px;
+                padding: 40px 24px;
             }
 
             .form-row {
@@ -836,6 +1019,7 @@
 
             .sort-bar select {
                 width: 100%;
+                max-width: none;
             }
 
             .availability-bottom {
@@ -907,10 +1091,10 @@
                 </label>
 
                 <select id="sortBy" v-model="sortBy">
-                    <option value="subject">Subject</option>
+                    <option value="topic">Subject</option>
                     <option value="location">Location</option>
                     <option value="price">Price</option>
-                    <option value="spaces">Spaces (availability)</option>
+                    <option value="space">Spaces (availability)</option>
                 </select>
 
                 <label for="sortOrder">Order</label>
@@ -929,7 +1113,7 @@
                             id="searchLessons"
                             type="text"
                             v-model="searchQuery"
-                            placeholder="Search subject or location..."
+                            placeholder="Search subject, location, price or spaces..."
                         >
                     </div>
                 </div>
@@ -939,29 +1123,40 @@
             <!-- LESSON CARDS -->
             <div class="lesson-grid">
 
-                <div class="no-results" v-if="sortedLessons.length === 0">
+                <div class="no-results" v-if="loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <strong>Loading lessons...</strong>
+                </div>
+
+                <div class="no-results" v-else-if="loadError">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <strong>Could not load lessons</strong>
+                    <p>{{ loadError }}</p>
+                </div>
+
+                <div class="no-results" v-else-if="sortedLessons.length === 0">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <strong>No lessons found</strong>
-                    <p>Try searching for another subject or location.</p>
+                    <p>Try searching for another subject, location or price.</p>
                 </div>
 
                 <article class="lesson-card"
                          v-for="lesson in sortedLessons"
-                         :key="lesson.id">
+                         :key="lesson._id">
 
                     <div class="image-container">
                         <img class="lesson-image"
-                             :src="lesson.image"
-                             :alt="lesson.subject + ' lesson'"
+                             :src="imageUrl(lesson)"
+                             :alt="lesson.topic + ' lesson'"
                              loading="lazy">
 
                         <span class="category-tag">
-                            {{ lesson.subject }}
+                            {{ lesson.topic }}
                         </span>
                     </div>
 
                     <div class="lesson-content">
-                        <h3>{{ lesson.subject }}</h3>
+                        <h3>{{ lesson.topic }}</h3>
 
                         <p class="lesson-location">
                             <i class="fa-solid fa-location-dot"></i>
@@ -1029,9 +1224,9 @@
                         </button>
 
                         <div class="in-cart-note"
-                             v-if="quantityInCart(lesson.id) > 0">
+                             v-if="quantityInCart(lesson._id) > 0">
                             <i class="fa-solid fa-circle-check"></i>
-                            {{ quantityInCart(lesson.id) }} in your cart
+                            {{ quantityInCart(lesson._id) }} in your cart
                         </div>
                     </div>
                 </article>
@@ -1070,14 +1265,14 @@
 
                 <div class="cart-item"
                      v-for="item in cartDetails"
-                     :key="item.id">
+                     :key="item._id">
 
                     <img class="cart-item-image"
-                         :src="item.image"
-                         :alt="item.subject">
+                         :src="imageUrl(item)"
+                         :alt="item.topic">
 
                     <div class="cart-item-info">
-                        <h3>{{ item.subject }}</h3>
+                        <h3>{{ item.topic }}</h3>
 
                         <p class="cart-item-location">
                             <i class="fa-solid fa-location-dot"></i>
@@ -1092,24 +1287,24 @@
 
                             <div class="quantity-control">
                                 <button type="button"
-                                        :aria-label="'Decrease ' + item.subject"
-                                        @click="decreaseQuantity(item.id)">
+                                        :aria-label="'Decrease ' + item.topic"
+                                        @click="decreaseQuantity(item._id)">
                                     <i class="fa-solid fa-minus"></i>
                                 </button>
 
                                 <span>{{ item.quantity }}</span>
 
                                 <button type="button"
-                                        :aria-label="'Increase ' + item.subject"
+                                        :aria-label="'Increase ' + item.topic"
                                         :disabled="remainingSpaces(item) === 0"
-                                        @click="increaseQuantity(item.id)">
+                                        @click="increaseQuantity(item._id)">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>
 
                             <button class="remove-button"
                                     type="button"
-                                    @click="removeFromCart(item.id)">
+                                    @click="removeFromCart(item._id)">
                                 <i class="fa-solid fa-trash"></i>
                                 Remove
                             </button>
@@ -1222,9 +1417,9 @@
 
                     <button class="primary-button"
                             type="submit"
-                            :disabled="hasErrors || cartCount === 0">
+                            :disabled="hasErrors || cartCount === 0 || submitting">
                         <i class="fa-solid fa-check-circle"></i>
-                        Checkout
+                        {{ submitting ? "Placing order..." : "Checkout" }}
                     </button>
 
                     <p class="checkout-hint" v-if="hasErrors">
@@ -1299,22 +1494,35 @@
 </div>
 
 <script>
-    if (typeof Vue !== "undefined" && typeof lessons !== "undefined") {
+    // Address of the Express.js back-end.
+    // Running locally -> local server; on GitHub Pages -> the render.com server.
+    // TODO: replace the render.com address with your own (it must contain your student number).
+    const API_URL =
+        (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+            ? "http://localhost:3000"
+            : "https://M00XXXXXXX-after-school.onrender.com";
+
+    if (typeof Vue !== "undefined") {
 
         new Vue({
             el: "#app",
 
             data: {
-                lessons: lessons.map(function(lesson) {
-                    return Object.assign({}, lesson);
-                }),
+                lessons: [],          // filled by fetch() from GET /lessons
+                loading: true,
+                loadError: "",
 
-                cart: [],
+                cart: [],             // [{ id: lessonId, quantity: n }]
 
                 // Sorting and search
-                sortBy: "subject",
+                sortBy: "topic",
                 sortOrder: "asc",
                 searchQuery: "",
+                searchIds: null,      // ids returned by GET /search (null = no search)
+                searchRequest: 0,     // used to ignore out-of-date search responses
+                searchTimer: null,
+                toastTimer: null,
+                submitting: false,
 
                 currentPage: "home",
                 toastMessage: "",
@@ -1406,20 +1614,20 @@
                     const attribute = this.sortBy;
                     const direction = this.sortOrder === "asc" ? 1 : -1;
 
-                    const search = this.searchQuery.trim().toLowerCase();
-
-                    const filteredLessons = this.lessons.filter(function(lesson) {
-                        return (
-                            lesson.subject.toLowerCase().includes(search) ||
-                            lesson.location.toLowerCase().includes(search)
-                        );
-                    });
+                    // The search itself happens in the back-end (GET /search).
+                    // Here we only keep the lessons whose ids the server returned.
+                    const ids = this.searchIds;
+                    const filteredLessons = ids === null
+                        ? this.lessons
+                        : this.lessons.filter(function(lesson) {
+                            return ids.indexOf(lesson._id) !== -1;
+                        });
 
                     return filteredLessons.slice().sort(function(a, b) {
                         let first;
                         let second;
 
-                        if (attribute === "spaces") {
+                        if (attribute === "space") {
                             first = self.remainingSpaces(a);
                             second = self.remainingSpaces(b);
                         } else {
@@ -1439,21 +1647,21 @@
                             return result * direction;
                         }
 
-                        return a.id - b.id;
+                        return a.topic.localeCompare(b.topic);
                     });
                 },
 
                 ascLabel: function() {
                     return (
                         this.sortBy === "price" ||
-                        this.sortBy === "spaces"
+                        this.sortBy === "space"
                     ) ? "Low to high" : "A to Z";
                 },
 
                 descLabel: function() {
                     return (
                         this.sortBy === "price" ||
-                        this.sortBy === "spaces"
+                        this.sortBy === "space"
                     ) ? "High to low" : "Z to A";
                 },
 
@@ -1468,7 +1676,7 @@
 
                     return this.cart.map(function(item) {
                         const lesson = self.lessons.find(function(lesson) {
-                            return lesson.id === item.id;
+                            return lesson._id === item.id;
                         });
 
                         return lesson
@@ -1521,7 +1729,19 @@
                 }
             },
 
+            // runs once when the Vue instance is created
+            created: function() {
+                this.loadLessons();
+            },
+
             watch: {
+                // every time the search box changes, ask the back-end
+                searchQuery: function() {
+                    clearTimeout(this.searchTimer);
+                    // wait 300 ms after the last key press before sending the request
+                    this.searchTimer = setTimeout(this.runSearch, 300);
+                },
+
                 cartCount: function(value) {
                     if (value === 0 && this.currentPage === "cart") {
                         this.currentPage = "home";
@@ -1531,6 +1751,62 @@
             },
 
             methods: {
+
+                // FETCH: GET /lessons
+                loadLessons: function() {
+                    const self = this;
+
+                    return fetch(API_URL + "/lessons")
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error("Server responded with " + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(function(json) {
+                            self.lessons = json;
+                            self.loadError = "";
+                        })
+                        .catch(function(error) {
+                            self.loadError = "Could not reach the server (" + error.message + ").";
+                        })
+                        .finally(function() {
+                            self.loading = false;
+                        });
+                },
+
+                // FETCH: GET /search?q=...
+                runSearch: function() {
+                    const self = this;
+                    const query = this.searchQuery.trim();
+
+                    if (query === "") {
+                        this.searchIds = null;
+                        return;
+                    }
+
+                    // only the newest request is allowed to update the results
+                    const requestNumber = ++this.searchRequest;
+
+                    fetch(API_URL + "/search?q=" + encodeURIComponent(query))
+                        .then(function(response) {
+                            return response.json();
+                        })
+                        .then(function(results) {
+                            if (requestNumber !== self.searchRequest) return;
+                            self.searchIds = results.map(function(lesson) {
+                                return lesson._id;
+                            });
+                        })
+                        .catch(function() {
+                            self.showToast("Search failed. Please try again.");
+                        });
+                },
+
+                // images are served by the Express static middleware
+                imageUrl: function(lesson) {
+                    return API_URL + "/images/" + lesson.image;
+                },
 
                 // VALIDATION
                 markTouched: function(field) {
@@ -1579,7 +1855,7 @@
                 remainingSpaces: function(lesson) {
                     return Math.max(
                         0,
-                        lesson.spaces - this.quantityInCart(lesson.id)
+                        lesson.space - this.quantityInCart(lesson._id)
                     );
                 },
 
@@ -1618,24 +1894,24 @@
                     }
 
                     const item = this.cart.find(function(item) {
-                        return item.id === lesson.id;
+                        return item.id === lesson._id;
                     });
 
                     if (item) {
                         item.quantity += 1;
                     } else {
                         this.cart.push({
-                            id: lesson.id,
+                            id: lesson._id,
                             quantity: 1
                         });
                     }
 
-                    this.showToast(lesson.subject + " added to cart!");
+                    this.showToast(lesson.topic + " added to cart!");
                 },
 
                 increaseQuantity: function(id) {
                     const lesson = this.lessons.find(function(lesson) {
-                        return lesson.id === id;
+                        return lesson._id === id;
                     });
 
                     if (lesson) {
@@ -1688,54 +1964,90 @@
                 placeBooking: function() {
                     this.formSubmitted = true;
 
-                    if (this.hasErrors || this.cartCount === 0) {
+                    if (this.hasErrors || this.cartCount === 0 || this.submitting) {
                         return;
                     }
 
-                    const bookingReference = "EDU-" + Date.now();
-
-                    this.bookingReference = bookingReference;
-                    this.confirmedCount = this.cartCount;
-                    this.confirmedTotal = this.cartTotal;
-
                     const self = this;
+                    this.submitting = true;
 
-                    this.cart.forEach(function(item) {
-                        const lesson = self.lessons.find(function(lesson) {
-                            return lesson.id === item.id;
+                    // 1) the order document saved in the "orders" collection
+                    const order = {
+                        name: this.customer.firstName + " " + this.customer.lastName,
+                        phone: this.normalizedPhone(),
+                        email: this.customer.email,
+                        lessonIDs: this.cart.map(function(item) { return item.id; }),
+                        spaces: this.cart.map(function(item) { return item.quantity; }),
+                        totalSpaces: this.cartCount,
+                        totalPrice: this.cartTotal
+                    };
+
+                    // FETCH: POST /orders
+                    fetch(API_URL + "/orders", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(order)
+                    })
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error("Order failed (" + response.status + ")");
+                            }
+                            return response.json();
+                        })
+                        .then(function(result) {
+                            self.bookingReference = result.insertedId;
+
+                            // 2) FETCH: PUT /lessons/:id - set the new number of spaces
+                            const updates = self.cart.map(function(item) {
+                                const lesson = self.lessons.find(function(lesson) {
+                                    return lesson._id === item.id;
+                                });
+                                const newSpace = Math.max(0, lesson.space - item.quantity);
+
+                                return fetch(API_URL + "/lessons/" + item.id, {
+                                    method: "PUT",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ space: newSpace })
+                                });
+                            });
+
+                            return Promise.all(updates);
+                        })
+                        .then(function() {
+                            self.confirmedCount = self.cartCount;
+                            self.confirmedTotal = self.cartTotal;
+                            self.cart = [];
+                            self.currentPage = "success";
+                            self.toastMessage = "";
+                            window.scrollTo(0, 0);
+
+                            // 3) reload lessons so the page shows the new spaces
+                            return self.loadLessons();
+                        })
+                        .catch(function(error) {
+                            self.showToast("Checkout failed: " + error.message);
+                        })
+                        .finally(function() {
+                            self.submitting = false;
                         });
-
-                        if (lesson) {
-                            lesson.spaces = Math.max(
-                                0,
-                                lesson.spaces - item.quantity
-                            );
-                        }
-                    });
-
-                    this.cart = [];
-                    this.currentPage = "success";
-                    this.toastMessage = "";
-
-                    window.scrollTo(0, 0);
                 },
 
                 showToast: function(message) {
+                    const self = this;
                     this.toastMessage = message;
+
+                    // hide the message again after 2.5 seconds
+                    clearTimeout(this.toastTimer);
+                    this.toastTimer = setTimeout(function() {
+                        self.toastMessage = "";
+                    }, 2500);
                 }
             }
         });
 
     } else {
-        if (typeof Vue === "undefined") {
-            document.body.innerHTML =
-                "Vue.js did not load. Check your internet connection.";
-        }
-
-        if (typeof lessons === "undefined") {
-            document.body.innerHTML =
-                "lessons.js did not load. Make sure it is in the same folder as index.html.";
-        }
+        document.body.innerHTML =
+            "Vue.js did not load. Check your internet connection.";
     }
 </script>
 
