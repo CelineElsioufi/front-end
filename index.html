@@ -1518,6 +1518,9 @@
                 sortOrder: "asc",
                 searchQuery: "",
                 searchIds: null,      // ids returned by GET /search (null = no search)
+
+                // Teachers
+                teachers: [],         // filled by fetch() from GET /teachers
                 searchRequest: 0,     // used to ignore out-of-date search responses
                 searchTimer: null,
                 toastTimer: null,
@@ -1731,6 +1734,7 @@
             // runs once when the Vue instance is created
             created: function() {
                 this.loadLessons();
+                this.loadTeachers();
             },
 
             watch: {
@@ -1750,6 +1754,26 @@
             },
 
             methods: {
+
+                // FETCH: GET /teachers
+                loadTeachers: function() {
+                    const self = this;
+
+                    return fetch(API_URL + "/teachers")
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error("Server responded with " + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(function(json) {
+                            self.teachers = json;
+                        })
+                        .catch(function() {
+                            // the lessons still work without teachers, so just show an empty list
+                            self.teachers = [];
+                        });
+                },
 
                 // FETCH: GET /lessons
                 loadLessons: function() {
