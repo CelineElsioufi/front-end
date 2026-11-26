@@ -1104,6 +1104,21 @@
                     <option value="desc">{{ descLabel }}</option>
                 </select>
 
+                <!-- TEACHER FILTER -->
+                <label for="teacherFilter">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    Teacher
+                </label>
+
+                <select id="teacherFilter" v-model="selectedTeacher">
+                    <option value="">All teachers</option>
+                    <option v-for="teacher in teachers"
+                            :key="teacher._id"
+                            :value="teacher._id">
+                        {{ teacher.firstName }} {{ teacher.lastName }}
+                    </option>
+                </select>
+
                 <!-- SEARCH BAR -->
                 <div class="search-control">
 
@@ -1521,6 +1536,7 @@
 
                 // Teachers
                 teachers: [],         // filled by fetch() from GET /teachers
+                selectedTeacher: "",  // id of the chosen teacher ("" = all teachers)
                 searchRequest: 0,     // used to ignore out-of-date search responses
                 searchTimer: null,
                 toastTimer: null,
