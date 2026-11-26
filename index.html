@@ -1178,6 +1178,11 @@
                             {{ lesson.location }}
                         </p>
 
+                        <p class="lesson-location" v-if="teacherNameFor(lesson)">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                            {{ teacherNameFor(lesson) }}
+                        </p>
+
                         <div class="lesson-footer">
                             <div class="price">
                                 AED {{ lesson.price }}
@@ -1780,6 +1785,15 @@
             },
 
             methods: {
+
+                // name of the teacher who teaches a lesson ("" if none is found)
+                teacherNameFor: function(lesson) {
+                    const teacher = this.teachers.find(function(teacher) {
+                        return teacher.lessonIDs.indexOf(lesson._id) !== -1;
+                    });
+
+                    return teacher ? teacher.firstName + " " + teacher.lastName : "";
+                },
 
                 // FETCH: GET /teachers
                 loadTeachers: function() {
