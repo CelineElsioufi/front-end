@@ -1152,7 +1152,11 @@
                 <div class="no-results" v-else-if="sortedLessons.length === 0">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <strong>No lessons found</strong>
-                    <p>Try searching for another subject, location or price.</p>
+                    <p v-if="selectedTeacher !== ''">
+                        None of this teacher's lessons match your search.
+                        Try another teacher or clear the search.
+                    </p>
+                    <p v-else>Try searching for another subject, location or price.</p>
                 </div>
 
                 <article class="lesson-card"
