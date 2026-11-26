@@ -330,6 +330,27 @@
             box-shadow: 0 0 0 3px rgba(47, 107, 87, 0.15);
         }
 
+        .clear-filters {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--ink);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .clear-filters:hover {
+            border-color: var(--leaf);
+            color: var(--leaf);
+        }
+
         .no-results {
             grid-column: 1 / -1;
             background: var(--card);
@@ -1131,6 +1152,14 @@
                             placeholder="Search subject, location, price or spaces..."
                         >
                     </div>
+
+                    <button class="clear-filters"
+                            type="button"
+                            v-if="searchQuery !== '' || selectedTeacher !== ''"
+                            @click="clearFilters">
+                        <i class="fa-solid fa-xmark"></i>
+                        Clear
+                    </button>
                 </div>
 
             </div>
@@ -1797,6 +1826,12 @@
                     });
 
                     return teacher ? teacher.firstName + " " + teacher.lastName : "";
+                },
+
+                // reset the search box and the teacher filter
+                clearFilters: function() {
+                    this.searchQuery = "";
+                    this.selectedTeacher = "";
                 },
 
                 // FETCH: GET /teachers
