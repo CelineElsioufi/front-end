@@ -1537,6 +1537,8 @@
                 // Teachers
                 teachers: [],         // filled by fetch() from GET /teachers
                 selectedTeacher: "",  // id of the chosen teacher ("" = all teachers)
+                teacherLessonIds: null, // lesson ids returned by GET /teachers/:id/lessons
+                teacherRequest: 0,    // used to ignore out-of-date teacher responses
                 searchRequest: 0,     // used to ignore out-of-date search responses
                 searchTimer: null,
                 toastTimer: null,
@@ -1635,11 +1637,14 @@
                     // The search itself happens in the back-end (GET /search).
                     // Here we only keep the lessons whose ids the server returned.
                     const ids = this.searchIds;
-                    const filteredLessons = ids === null
-                        ? this.lessons
-                        : this.lessons.filter(function(lesson) {
-                            return ids.indexOf(lesson._id) !== -1;
-                        });
+                    const teacherIds = this.teacherLessonIds;
+
+                    // a lesson must match the search AND the chosen teacher
+                    const filteredLessons = this.lessons.filter(function(lesson) {
+                        const matchesSearch = ids === null || ids.indexOf(lesson._id) !== -1;
+                        const matchesTeacher = teacherIds === null || teacherIds.indexOf(lesson._id) !== -1;
+                        return matchesSearch && matchesTeacher;
+                    });
 
                     return filteredLessons.slice().sort(function(a, b) {
                         let first;
@@ -1754,6 +1759,11 @@
             },
 
             watch: {
+                // every time a teacher is chosen, ask the back-end for their lessons
+                selectedTeacher: function() {
+                    this.loadTeacherLessons();
+                },
+
                 // every time the search box changes, ask the back-end
                 searchQuery: function() {
                     clearTimeout(this.searchTimer);
@@ -1788,6 +1798,36 @@
                         .catch(function() {
                             // the lessons still work without teachers, so just show an empty list
                             self.teachers = [];
+                        });
+                },
+
+                // FETCH: GET /teachers/:id/lessons
+                loadTeacherLessons: function() {
+                    const self = this;
+
+                    if (this.selectedTeacher === "") {
+                        this.teacherLessonIds = null;
+                        return;
+                    }
+
+                    // only the newest request is allowed to update the results
+                    const requestNumber = ++this.teacherRequest;
+
+                    fetch(API_URL + "/teachers/" + this.selectedTeacher + "/lessons")
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error("Server responded with " + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(function(results) {
+                            if (requestNumber !== self.teacherRequest) return;
+                            self.teacherLessonIds = results.map(function(lesson) {
+                                return lesson._id;
+                            });
+                        })
+                        .catch(function() {
+                            self.showToast("Could not load that teacher's lessons.");
                         });
                 },
 
