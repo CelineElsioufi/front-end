@@ -1332,6 +1332,11 @@
                             {{ item.location }}
                         </p>
 
+                        <p class="cart-item-location" v-if="teacherNameFor(item)">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                            {{ teacherNameFor(item) }}
+                        </p>
+
                         <div class="cart-item-price">
                             AED {{ item.price * item.quantity }}
                         </div>
